@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MOMEN Farted</title>
+<style>
+  body { margin:0; background:#05070d; color:#00ffc3; font-family:Consolas, monospace; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #title { font-size:56px; letter-spacing:6px; text-shadow:0 0 20px #00ffc3; min-height:70px; }
+  #start { margin-top:30px; padding:14px 30px; font-size:20px; background:transparent; color:#00ffc3; border:2px solid #00ffc3; cursor:pointer; }
+  #start:hover { background:#00ffc3; color:#05070d; }
+  #chat { display:none; width:min(640px,90vw); flex-direction:column; margin-top:20px; }
+  #log { height:300px; overflow-y:auto; border:1px solid #00ffc3; padding:12px; font-size:18px; }
+  #log p { margin:8px 0; }
+  .me { color:#fff; }
+  #input { margin-top:10px; padding:12px; font-size:18px; background:#0b1020; color:#00ffc3; border:1px solid #00ffc3; font-family:inherit; }
+</style>
+</head>
+<body>
+<div id="title"></div>
+<button id="start">Click to activate</button>
+<div id="chat">
+  <div id="log"></div>
+  <input id="input" placeholder="Ask MOMEN Farted something..." autocomplete="off">
+</div>
+
+<audio id="fart" src="fart.mp3" preload="auto"></audio>
+
+<script>
+const title = document.getElementById('title');
+const startBtn = document.getElementById('start');
+const chat = document.getElementById('chat');
+const log = document.getElementById('log');
+const input = document.getElementById('input');
+const fart = document.getElementById('fart');
+
+const name = 'MOMEN Farted';
+let i = 0;
+function typeTitle() {
+  if (i <= name.length) {
+    title.textContent = name.slice(0, i) + (i < name.length ? '_' : '');
+    i++;
+    setTimeout(typeTitle, 150);
+  }
+}
+typeTitle();
+
+function say(who, text) {
+  const p = document.createElement('p');
+  p.className = who;
+  p.textContent = (who === 'me' ? 'You: ' : 'MOMEN Farted: ') + text;
+  log.appendChild(p);
+  log.scrollTop = log.scrollHeight;
+}
+
+startBtn.onclick = () => {
+  startBtn.style.display = 'none';
+  chat.style.display = 'flex';
+  fart.play().catch(() => {});
+  setTimeout(() => say('bot', 'Ugh. What do you want now, bro?'), 1200);
+};
+
+const math = /(\d+)\s*(\+|plus|-|minus|x|times|\*|\/|divided by)\s*(\d+)|what is \d+|calculate|math|equals/i;
+
+const replies = [
+  { test: /hello|hi\b|hey|yo\b/i, say: ['Oh great, another human. What.', 'Hi. Now go away.', 'Yo. I was napping, bro.'] },
+  { test: /who are you|your name|what are you/i, say: ['I am MOMEN Farted. Yes, that is my real name. Stop laughing.', 'Some genius AI. Or not. I forgot.'] },
+  { test: /smart|genius|intelligent/i, say: ['Smart? Me? Are you dumb, bro?', 'I am not smart. I am a very confident potato.'] },
+  { test: /fart|smell|stink/i, say: ['That was not me. It was the computer.', 'Whoever smelt it dealt it, bro.'] },
+  { test: /help|homework|assignment|code|program/i, say: ['Boo, just go ask your teacher.', 'Help? I cannot even help myself. Ask your teacher.'] },
+  { test: /capital|country|history|science|who invented/i, say: ['Bro, do I look like a library? Go ask Google.', 'I do not know. Go ask your teacher.'] },
+  { test: /joke/i, say: ['You. You are the joke. Ha.', 'Why did I answer you? Nobody knows.'] },
+  { test: /bye|goodbye|see you/i, say: ['Finally. Bye, dummy.', 'Good. I need a nap.'] }
+];
+
+const fallback = [
+  'Are you stupid, bro?',
+  'Are you dumb? Go ask your teacher.',
+  'I do not know. Ask someone else.',
+  'Boo. Boring question. Next.',
+  'My brain is on vacation. Try again never.',
+  'What kind of question is that, silly goose?'
+];
+
+const mathReplies = [
+  'I do not know, go ask your calculator.',
+  'Math? Bro, that is what calculators are for.',
+  'Ew, numbers. Ask your calculator.'
+];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function respond(q) {
+  if (math.test(q)) return pick(mathReplies);
+  for (const r of replies) if (r.test.test(q)) return pick(r.say);
+  return pick(fallback);
+}
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && input.value.trim()) {
+    const q = input.value.trim();
+    input.value = '';
+    say('me', q);
+    setTimeout(() => say('bot', respond(q)), 600);
+  }
+});
+</script>
+</body>
+</html>
